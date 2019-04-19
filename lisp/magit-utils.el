@@ -821,23 +821,23 @@ that it will align with the text area."
                                             '(scroll-bar)))))))
          (len (length header-line)))
     (setq header-line-format
-          (if (text-property-not-all 0 len 'face nil header-line)
-              (let ((face (get-text-property 0 'face string)))
+          (if (text-property-not-all 0 len 'font-lock-face nil header-line)
+              (let ((face (get-text-property 0 'font-lock-face string)))
                 (when (and (atom face)
                            (magit-face-property-all face string))
                   (add-face-text-property 0 1 face nil header-line)
                   (add-face-text-property (1- len) len face nil header-line))
                 header-line)
             (propertize header-line
-                        'face
+                        'font-lock-face
                         'magit-header-line)))))
 
 (defun magit-face-property-all (face string)
   "Return non-nil if FACE is present in all of STRING."
-  (cl-loop for pos = 0 then (next-single-property-change pos 'face string)
+  (cl-loop for pos = 0 then (next-single-property-change pos 'font-lock-face string)
            unless pos
              return t
-           for current = (get-text-property pos 'face string)
+           for current = (get-text-property pos 'font-lock-face string)
            unless (if (consp current)
                       (memq face current)
                     (eq face current))
@@ -1001,33 +1001,6 @@ Imenu's potentially outdated and therefore unreliable cache by
 setting `imenu--index-alist' to nil before calling that function."
   (setq imenu--index-alist nil)
   (which-function))
-
-;;; Kludges for Incompatible Modes
-
-(defvar whitespace-mode)
-
-(defun whitespace-dont-turn-on-in-magit-mode (fn)
-  "Prevent `whitespace-mode' from being turned on in Magit buffers.
-
-Because `whitespace-mode' uses font-lock and Magit does not, they
-are not compatible.  Therefore you cannot turn on that minor-mode
-in Magit buffers.  If you try to enable it anyway, then this
-advice prevents that.
-
-If the reason the attempt is made is that `global-whitespace-mode'
-is enabled, then that is done silently.  However if you call the local
-minor-mode interactively, then that results in an error.
-
-See `magit-diff-paint-whitespace' for an alternative."
-  (if (not (derived-mode-p 'magit-mode))
-      (funcall fn)
-    (setq whitespace-mode nil)
-    (when (eq this-command 'whitespace-mode)
-      (user-error
-       "Whitespace mode NOT enabled because it is not compatible with Magit"))))
-
-(advice-add 'whitespace-turn-on :around
-            'whitespace-dont-turn-on-in-magit-mode)
 
 ;;; Kludges for Custom
 

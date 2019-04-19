@@ -135,9 +135,9 @@ If there is only one worktree, then insert nothing."
                 (mapcar (pcase-lambda (`(,path ,barep ,commit ,branch))
                           (cons (cond
                                  (branch (propertize branch
-                                                     'face 'magit-branch-local))
+                                                     'font-lock-face 'magit-branch-local))
                                  (commit (propertize (magit-rev-abbrev commit)
-                                                     'face 'magit-hash))
+                                                     'font-lock-face 'magit-hash))
                                  (barep  "(bare)"))
                                 path))
                         worktrees))

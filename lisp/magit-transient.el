@@ -142,12 +142,12 @@
           (if (cdr value)
               (mapconcat (lambda (v)
                            (concat "\n     "
-                                   (propertize v 'face 'transient-value)))
+                                   (propertize v 'font-lock-face 'transient-value)))
                          value "")
-            (propertize (car value) 'face 'transient-value))
+            (propertize (car value) 'font-lock-face 'transient-value))
         (propertize (car (split-string value "\n"))
-                    'face 'transient-value))
-    (propertize "unset" 'face 'transient-inactive-value)))
+                    'font-lock-face 'transient-value))
+    (propertize "unset" 'font-lock-face 'transient-inactive-value)))
 
 (cl-defmethod transient-format-value ((obj magit--git-variable:choices))
   (let* ((variable (oref obj variable))
@@ -162,19 +162,19 @@
     (when (functionp choices)
       (setq choices (funcall choices)))
     (concat
-     (propertize "[" 'face 'transient-inactive-value)
+     (propertize "[" 'font-lock-face 'transient-inactive-value)
      (mapconcat (lambda (choice)
-                  (propertize choice 'face (if (equal choice local)
+                  (propertize choice 'font-lock-face (if (equal choice local)
                                                'transient-value
                                              'transient-inactive-value)))
                 choices
-                (propertize "|" 'face 'transient-inactive-value))
+                (propertize "|" 'font-lock-face 'transient-inactive-value))
      (and (or global fallback default)
           (concat
-           (propertize "|" 'face 'transient-inactive-value)
+           (propertize "|" 'font-lock-face 'transient-inactive-value)
            (cond (global
                   (propertize (concat "global:" global)
-                              'face (cond (local
+                              'font-lock-face (cond (local
                                            'transient-inactive-value)
                                           ((member global choices)
                                            'transient-value)
@@ -182,15 +182,15 @@
                                            'font-lock-warning-face))))
                  (fallback
                   (propertize fallback
-                              'face (if local
+                              'font-lock-face (if local
                                         'transient-inactive-value
                                       'transient-value)))
                  (default
                    (propertize (concat "default:" default)
-                               'face (if local
+                               'font-lock-face (if local
                                          'transient-inactive-value
                                        'transient-value))))))
-     (propertize "]" 'face 'transient-inactive-value))))
+     (propertize "]" 'font-lock-face 'transient-inactive-value))))
 
 ;;; _
 (provide 'magit-transient)
