@@ -1391,7 +1391,11 @@ for the commit whose changes are being shown."
   (interactive (list (--if-let (magit-file-at-point)
                          (expand-file-name it)
                        (user-error "No file at point"))))
-  (magit-diff-visit-file file t))
+  (if (magit-file-accessible-directory-p file)
+      (magit-diff-visit-directory file t)
+    (pcase-let ((`(,buf ,pos) (magit-diff-visit--noselect file)))
+      (switch-to-buffer-other-window buf)
+      (magit-diff-visit--setup buf pos))))
 
 (defun magit-diff-visit-file-worktree (file &optional other-window)
   "From a diff, visit the corresponding file at the appropriate position.
@@ -1411,7 +1415,11 @@ or `HEAD'."
   (interactive (list (or (magit-file-at-point)
                          (user-error "No file at point"))
                      current-prefix-arg))
-  (magit-diff-visit-file file other-window t))
+  (if (magit-file-accessible-directory-p file)
+      (magit-diff-visit-directory file other-window)
+    (pcase-let ((`(,buf ,pos) (magit-diff-visit--noselect file t)))
+      (magit-display-file-buffer buf)
+      (magit-diff-visit--setup buf pos))))
 
 ;;;;; Internal
 

@@ -683,15 +683,13 @@ active, restrict the log to the lines that the region touches."
 (defun magit-diff-trace-definition ()
   "Show log for the definition at point in a diff."
   (interactive)
-  (let (buf pos)
-    (save-window-excursion
-      (call-interactively #'magit-diff-visit-file)
-      (setq buf (current-buffer))
-      (setq pos (point)))
-    (with-current-buffer buf
-      (save-excursion
-        (goto-char pos)
-        (call-interactively #'magit-log-trace-definition)))))
+  (if-let ((file (magit-file-at-point)))
+      (pcase-let ((`(,buf ,pos) (magit-diff-visit--noselect file)))
+        (with-current-buffer buf
+          (save-excursion
+            (goto-char pos)
+            (call-interactively #'magit-log-trace-definition))))
+    (user-error "No file at point")))
 
 ;;;###autoload
 (defun magit-log-merged (commit branch &optional args files)
